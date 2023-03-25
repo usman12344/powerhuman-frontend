@@ -1,6 +1,6 @@
 <template>
-        <!-- Main Content -->
-        <div class="lg:pr-[70px] py-[50px] lg:ml-[320px] xl:ml-[365px] px-4 lg:pl-0">
+    <!-- Main Content -->
+    <div class="lg:pr-[70px] py-[50px] lg:ml-[320px] xl:ml-[365px] px-4 lg:pl-0">
         <!-- Top Section -->
         <section class="flex flex-col flex-wrap justify-between gap-6 md:items-center md:flex-row">
             <div class="flex items-center justify-between gap-4">
@@ -13,7 +13,7 @@
                     </svg>
                 </a>
                 <div class="text-[32px] font-semibold text-dark">
-                    My Teams
+                    Company Roles
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -38,40 +38,24 @@
                         </div>
                         <p class="text-grey">Empower company</p>
                     </div>
-                    <a href="my-teams_create.html" class="btn btn-primary">Build New Team</a>
+                    <NuxtLink :to="{ name: 'companies-id-roles-create' }" class="btn btn-primary">New Role</NuxtLink>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3">
-                <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
+                
+                <p v-if="$fetchState.pending">Loading....</p>
+                <div v-else class="items-center card !flex-row gap-4" v-for="role in roles.data.data.data" :key="role.id">
                     <a href="#" class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"></a>
-                    <img src="/assets/svgs/ric-box.svg" alt="">
-                    <div class="mt-6 mb-1 font-semibold text-center text-dark">
-                        Growth Marketing
+                    <img src="/assets/svgs/ric-flag.svg" alt="">
+                    <div>
+                        <div class="mb-1 font-semibold text-dark">
+                            {{ role.name }}
+                        </div>
+                        <p class="text-grey">
+                            {{ role.employees_count }} people assigned
+                        </p>
                     </div>
-                    <p class="text-center text-grey">
-                        12 People
-                    </p>
-                </div>
-                <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-                    <a href="#" class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"></a>
-                    <img src="/assets/svgs/ric-target.svg" alt="">
-                    <div class="mt-6 mb-1 font-semibold text-center text-dark">
-                        User Growth
-                    </div>
-                    <p class="text-center text-grey">
-                        5,312 People
-                    </p>
-                </div>
-                <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-                    <a href="#" class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"></a>
-                    <img src="/assets/svgs/ric-award.svg" alt="">
-                    <div class="mt-6 mb-1 font-semibold text-center text-dark">
-                        Gamification
-                    </div>
-                    <p class="text-center text-grey">
-                        893 People
-                    </p>
                 </div>
             </div>
         </section>
@@ -81,5 +65,22 @@
 <script>
 export default {
   layout: 'dashboard',
+  middleware: 'auth',
+
+  data() {
+      return {
+        roles: []
+      }
+    },
+    async fetch() {
+      this.roles = await this.$axios.get(
+        '/role', {
+            params: {
+                company_id: this.$route.params.id,
+                limit: 100,
+            }
+        }
+      )
+    }
 }
 </script>
